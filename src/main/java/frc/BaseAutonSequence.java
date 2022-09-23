@@ -1,8 +1,4 @@
-package frc.robot.autons.parent;
-
-import frc.robot.autons.pathplannerfollower.PathPlannerFollower;
-import frc.robot.sequences.parent.BaseSequence;
-import frc.robot.subsystems.parent.BaseDriveSubsystem;
+package frc;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package frc.robot.sequences.parent;
+package frc;
 
 public interface ISequence<SeqS extends ISequencePhase> {
 

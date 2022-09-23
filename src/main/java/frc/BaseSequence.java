@@ -1,7 +1,4 @@
-package frc.robot.sequences.parent;
-
-
-import frc.robot.subsystems.parent.BaseSubsystem;
+package frc;
 
 public abstract class BaseSequence<SeqP extends ISequencePhase> implements ISequence<SeqP> {
 

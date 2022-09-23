@@ -1,7 +1,4 @@
-package frc.robot.autons.parent;
-
-import frc.robot.autons.pathplannerfollower.PathPlannerFollower;
-import frc.robot.sequences.parent.ISequencePhase;
+package frc;
 
 public interface IAutonPhase extends ISequencePhase {
 

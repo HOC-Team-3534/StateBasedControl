@@ -1,7 +1,4 @@
-package frc.robot.sequences.parent;
-
-import frc.robot.subsystems.parent.BaseSubsystem;
-import frc.robot.subsystems.parent.SubsystemRequirement;
+package frc;
 
 import java.util.Arrays;
 import java.util.List;

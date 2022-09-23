@@ -1,8 +1,6 @@
-package frc.robot.subsystems.parent;
+package frc;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.robot.sequences.parent.BaseSequence;
-import frc.robot.sequences.parent.ISequencePhase;
 
 import java.util.ArrayList;
 import java.util.HashMap;

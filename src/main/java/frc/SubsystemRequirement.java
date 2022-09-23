@@ -1,4 +1,4 @@
-package frc.robot.subsystems.parent;
+package frc;
 
 public abstract class SubsystemRequirement<BaseS extends BaseSubsystem, SsS extends ISubsystemState<BaseS>> {
 
