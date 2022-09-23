@@ -1,0 +1,19 @@
+{
+    "fileName": "StateBasedControl.json",
+    "name": "statebasedcontrol",
+    "version": "2022.0.1",
+    "uuid": "f0571c82-3b3f-11ed-a261-0242ac120002",
+    "mavenUrls": [
+      "https://jitpack.io"
+    ],
+    "jsonUrl": "https://raw.githubusercontent.com/HOC-Team-3534/StateBasedControl/master/StateBasedControl.json",
+    "javaDependencies": [
+      {
+        "groupId": "com.github.HOC-Team-3534",
+        "artifactId": "StateBasedControl",
+        "version": "2022.0.1"
+      }
+    ],
+    "jniDependencies": [],
+    "cppDependencies": []
+}
