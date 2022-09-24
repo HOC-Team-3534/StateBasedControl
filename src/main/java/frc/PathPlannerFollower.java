@@ -6,8 +6,8 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 /**
  * The core of being able to follow a {@link PathPlannerTrajectory} from a .path file from PathPlanner. The path is
- * generated upon initialization using the {@link #loadPath(String) loadPath(String fileName)} method.
- * Use the {@link #getInitialPosition()} and {@link #getInitialHolonomic()} in order to see the initial {@link edu.wpi.first.math.kinematics.SwerveDriveOdometry SwerveDriveOdometry}
+ * generated upon initialization using the {@link #loadPath(String, double, double) loadPath(String pathName, double maxSpeed, double maxAccel)} method.
+ * Use the {@link #getInitialState()} in order to see the initial {@link PathPlannerState}
  * Make sure to {@link #resetStart()} when ready to follow the path, then {@link #getCurrentState()}
  */
 public class PathPlannerFollower {
