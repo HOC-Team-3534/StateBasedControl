@@ -1,4 +1,4 @@
-package frc;
+package frc.statebasedcontroller.config;
 
 public class DriveSpeedsConfig {
     public static double FWD_REV_FAST = 0.0;

@@ -1,6 +1,10 @@
-package frc;
+package frc.statebasedcontroller.sequence.fundamental;
 
 import java.util.List;
+
+import frc.statebasedcontroller.subsystem.fundamental.BaseSubsystem;
+import frc.statebasedcontroller.subsystem.fundamental.ISubsystemState;
+import frc.statebasedcontroller.subsystem.fundamental.SubsystemRequirement;
 
 public interface ISequencePhase {
 

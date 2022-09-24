@@ -1,7 +1,10 @@
-package frc;
+package frc.statebasedcontroller.sequence.fundamental;
 
 import java.util.Arrays;
 import java.util.List;
+
+import frc.pathplanner.PathPlannerFollower;
+import frc.statebasedcontroller.subsystem.general.swervedrive.BaseDriveSubsystem;
 
 public abstract class BaseAutonSequence<S extends IAutonPhase> extends BaseSequence<S> {
 

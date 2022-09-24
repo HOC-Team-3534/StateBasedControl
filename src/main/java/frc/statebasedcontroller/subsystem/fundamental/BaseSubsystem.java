@@ -1,6 +1,8 @@
-package frc;
+package frc.statebasedcontroller.subsystem.fundamental;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import frc.statebasedcontroller.sequence.fundamental.BaseSequence;
+import frc.statebasedcontroller.sequence.fundamental.ISequencePhase;
 
 import java.util.ArrayList;
 import java.util.HashMap;

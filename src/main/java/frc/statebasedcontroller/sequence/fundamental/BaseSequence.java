@@ -1,4 +1,6 @@
-package frc;
+package frc.statebasedcontroller.sequence.fundamental;
+
+import frc.statebasedcontroller.subsystem.fundamental.BaseSubsystem;
 
 public abstract class BaseSequence<SeqP extends ISequencePhase> implements ISequence<SeqP> {
 

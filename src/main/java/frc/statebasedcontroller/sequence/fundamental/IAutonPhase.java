@@ -1,4 +1,6 @@
-package frc;
+package frc.statebasedcontroller.sequence.fundamental;
+
+import frc.pathplanner.PathPlannerFollower;
 
 public interface IAutonPhase extends ISequencePhase {
 

@@ -1,4 +1,4 @@
-package frc;
+package frc.statebasedcontroller.subsystem.fundamental;
 
 public interface ISubsystem {
 

@@ -1,4 +1,4 @@
-package frc;
+package frc.statebasedcontroller.subsystem.fundamental;
 
 public abstract class SubsystemRequirement<BaseS extends BaseSubsystem, SsS extends ISubsystemState<BaseS>> {
 
