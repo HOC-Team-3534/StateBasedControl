@@ -1,4 +1,6 @@
-package frc.statebasedcontroller.sequence.fundamental;
+package frc.statebasedcontroller.sequence.fundamental.sequence;
+
+import frc.statebasedcontroller.sequence.fundamental.phase.ISequencePhase;
 
 public interface ISequence<SeqS extends ISequencePhase> {
 

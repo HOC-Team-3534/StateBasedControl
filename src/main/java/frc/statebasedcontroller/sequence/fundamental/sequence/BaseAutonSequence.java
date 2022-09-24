@@ -1,12 +1,13 @@
-package frc.statebasedcontroller.sequence.fundamental;
+package frc.statebasedcontroller.sequence.fundamental.sequence;
 
 import java.util.Arrays;
 import java.util.List;
 
 import frc.pathplanner.PathPlannerFollower;
+import frc.statebasedcontroller.sequence.fundamental.phase.ISequencePhase;
 import frc.statebasedcontroller.subsystem.general.swervedrive.BaseDriveSubsystem;
 
-public abstract class BaseAutonSequence<S extends IAutonPhase> extends BaseSequence<S> {
+public abstract class BaseAutonSequence<S extends ISequencePhase> extends BaseSequence<S> {
 
     final BaseDriveSubsystem baseDriveSubsystem;
     PathPlannerFollower pathPlannerFollower;
@@ -27,7 +28,7 @@ public abstract class BaseAutonSequence<S extends IAutonPhase> extends BaseSeque
 
     protected void setPathPlannerFollowerAtStartOfState(boolean setInitialPositionAndHeading) {
         if (this.getPhaseFirstRunThrough()) {
-            this.pathPlannerFollower = this.getPhase().getPath(this);
+            this.pathPlannerFollower = this.getPhase().getPhase().getPath(this);
             this.pathPlannerFollower.resetStart();
             this.getBaseDriveSubsystem().setPathPlannerFollower(getPlannerFollower(), setInitialPositionAndHeading);
         }
@@ -35,7 +36,7 @@ public abstract class BaseAutonSequence<S extends IAutonPhase> extends BaseSeque
 
     protected void setInitialPoseFromCurrentPath() {
         if (this.getPhaseFirstRunThrough()) {
-            this.getBaseDriveSubsystem().setInitalPoseFromFirstPathPlannerFollower(this.getPhase().getPath(this));
+            this.getBaseDriveSubsystem().setInitalPoseFromFirstPathPlannerFollower(this.getPhase().getPhase().getPath(this));
         }
     }
 

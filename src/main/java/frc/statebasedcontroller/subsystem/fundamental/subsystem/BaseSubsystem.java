@@ -1,8 +1,9 @@
-package frc.statebasedcontroller.subsystem.fundamental;
+package frc.statebasedcontroller.subsystem.fundamental.subsystem;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import frc.statebasedcontroller.sequence.fundamental.BaseSequence;
-import frc.statebasedcontroller.sequence.fundamental.ISequencePhase;
+import frc.statebasedcontroller.sequence.fundamental.phase.ISequencePhase;
+import frc.statebasedcontroller.sequence.fundamental.sequence.BaseSequence;
+import frc.statebasedcontroller.subsystem.fundamental.state.ISubsystemState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public abstract class BaseSubsystem<SsS extends ISubsystemState> implements ISub
         checkStateChanged();
         checkToTurnOff();
 
-        getCurrentSubsystemState().getState().process(this);
+        getCurrentSubsystemState().getState().process();
     }
 
     private boolean isStillRequired() {
