@@ -3,6 +3,7 @@ package frc.statebasedcontroller.sequence.fundamental.phase;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import frc.pathplanner.PathPlannerFollower;
@@ -20,7 +21,7 @@ import frc.statebasedcontroller.subsystem.fundamental.subsystem.BaseSubsystem;
  */
 public class SequencePhase {
 
-    final PathPlannerFollower path;
+    final Supplier<PathPlannerFollower> pathGetter;
     List<ISubsystemState> subsystemStates;
     Set<BaseSubsystem> requiredSubsystems;
 
@@ -30,16 +31,16 @@ public class SequencePhase {
      */
     public SequencePhase(ISubsystemState... states) {
         subsystemStates = Arrays.asList(states);
-        path = null;
+        pathGetter = () -> null;
     }
 
     /**
      * 
-     * @param path the autonomous path to follow during this phase of the sequence
+     * @param pathGetter the supplier of the autonomous path to follow during this phase of the sequence
      * @param states all the states for each subsystem that they should be in during this phase of the sequence
      */
-    public SequencePhase(PathPlannerFollower path, ISubsystemState... states) {
-        this.path = path;
+    public SequencePhase(Supplier<PathPlannerFollower> pathGetter, ISubsystemState... states) {
+        this.pathGetter = pathGetter;
         subsystemStates = Arrays.asList(states);
     }
 
@@ -74,6 +75,6 @@ public class SequencePhase {
      * @return autonomous path followed during the phase
      */
     public PathPlannerFollower getPath() {
-        return path;
+        return pathGetter.get();
     }
 }
