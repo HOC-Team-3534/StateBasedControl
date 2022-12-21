@@ -1,5 +1,6 @@
 package frc.statebasedcontroller.sequence.fundamental.sequence;
 
+import java.util.Arrays;
 import java.util.List;
 
 import frc.pathplanner.PathPlannerFollower;
@@ -15,8 +16,8 @@ public abstract class BaseAutonSequence<SeqP extends ISequencePhase> extends Bas
 
     final BaseDriveSubsystem baseDriveSubsystem;
     PathPlannerFollower pathPlannerFollower;
-    List<PathPlannerFollower> paths;
     boolean alreadySetInitialPosition;
+    List<PathPlannerFollower> paths;
 
     /**
      * 
@@ -56,10 +57,7 @@ public abstract class BaseAutonSequence<SeqP extends ISequencePhase> extends Bas
             this.phase = phase;
             resetPhaseStartTime();
             phaseFirstRunThrough = true;
-            if(getPhase().getPhase().getPath() != null){
-                setPathPlannerFollowerAtStartOfState(!alreadySetInitialPosition);
-                alreadySetInitialPosition = true;
-            }
+            setPathPlannerFollowerAtStartOfState(!alreadySetInitialPosition);
             return true;
         }
         return false;
@@ -73,9 +71,10 @@ public abstract class BaseAutonSequence<SeqP extends ISequencePhase> extends Bas
      */
     void setPathPlannerFollowerAtStartOfState(boolean setInitialPositionAndHeading) {
         if (getPhaseFirstRunThrough()) {
-            setPathPlannerFollower(getPhase().getPhase().getPath());
+            setPathPlannerFollower();
             getPlannerFollower().resetStart();
             getBaseDriveSubsystem().setPathPlannerFollower(getPlannerFollower(), setInitialPositionAndHeading);
+            alreadySetInitialPosition = true;
         }
     }
 
@@ -97,9 +96,36 @@ public abstract class BaseAutonSequence<SeqP extends ISequencePhase> extends Bas
 
     /**
      * 
-     * @param path the path follower to follow in the current phase of the sequence
+     * Set the PathPlannerFollower based on current phase
      */
-    void setPathPlannerFollower(PathPlannerFollower path){
-        this.pathPlannerFollower = path;
+    void setPathPlannerFollower(){
+        int index = getPhase().getPhase().getPathIndex();
+        if(index > 0 && !(index >= getPathPlannerFollowers().size())){
+            this.pathPlannerFollower = getPathPlannerFollowers().get(index);
+        }
+    }
+
+    /**
+     * 
+     * @return the list of paths for the auton
+     */
+    List<PathPlannerFollower> getPathPlannerFollowers(){
+        return paths;
+    }
+
+    /**
+     * 
+     * @param paths the paths for the auton sequence to follow, corresponding with the path indeces in the sequence phases
+     */
+    public void setPathPlannerFollowers(List<PathPlannerFollower> paths){
+        this.paths = paths;
+    }
+
+    /**
+     * 
+     * @param paths the paths for the auton sequence to follow, corresponding with the path indeces in the sequence phases
+     */
+    public void setPathPlannerFollowers(PathPlannerFollower... paths){
+        this.paths = Arrays.asList(paths);
     }
 }
