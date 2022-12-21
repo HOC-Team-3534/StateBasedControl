@@ -4,7 +4,15 @@ import frc.statebasedcontroller.subsystem.fundamental.subsystem.BaseSubsystem;
 
 public interface ISubsystemState<BaseS extends BaseSubsystem> {
 
-    SubsystemState<BaseS> getState();
+    /**
+     * 
+     * @return the instance of {@link BaseSubsystem} associated with the enum of the state for the subystem
+     */
+    BaseSubsystem getState();
 
+    /**
+     * 
+     * @return associated subsystem to the states
+     */
     BaseS getSubsystem();
 }

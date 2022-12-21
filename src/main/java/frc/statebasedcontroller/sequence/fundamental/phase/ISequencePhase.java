@@ -1,23 +1,16 @@
 package frc.statebasedcontroller.sequence.fundamental.phase;
 
-import java.util.List;
-
-import frc.statebasedcontroller.sequence.fundamental.sequence.BaseSequence;
-import frc.statebasedcontroller.subsystem.fundamental.state.ISubsystemState;
-
+/**
+ * This sequence phase interface must be implemented by each 
+ * enum of sequence phases. These enums define the phases (aka steps)
+ * of the sequence. Each enum has a {@link SequencePhase} that can be accessed
+ * using {@link #getPhase()}
+ */
 public interface ISequencePhase {
 
-    static boolean requireSubsystems(BaseSequence<? extends ISequencePhase> sequence, List<ISubsystemState> states) {
-        for (ISubsystemState state : states) {
-            if (state.getSubsystem().isRequiredByAnother(sequence)) {
-                return false;
-            }
-        }
-        for (ISubsystemState state : states) {
-            state.getSubsystem().require(sequence, state);
-        }
-        return true;
-    }
-
+    /**
+     * 
+     * @return phase instance associated with the {@link ISequencePhase} enum
+     */
     SequencePhase getPhase();
 }

@@ -6,30 +6,57 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import frc.pathplanner.PathPlannerFollower;
-import frc.statebasedcontroller.sequence.fundamental.sequence.BaseAutonSequence;
 import frc.statebasedcontroller.sequence.fundamental.sequence.BaseSequence;
 import frc.statebasedcontroller.subsystem.fundamental.state.ISubsystemState;
+import frc.statebasedcontroller.subsystem.fundamental.state.SubsystemState;
 import frc.statebasedcontroller.subsystem.fundamental.subsystem.BaseSubsystem;
 
+/**
+ * This sequence phase class encapsulates the required {@link BaseSubsystem subsystems},
+ * the associated {@link SubsystemState states}, and the {@link PathPlannerFollower path}.
+ * 
+ * The required subsystems are here, so {@link #requireSubsystems(BaseSequence) requireSubsystems}
+ * is in this class.
+ */
 public class SequencePhase {
 
-    int pathIndex = -999;
+    final PathPlannerFollower path;
     List<ISubsystemState> subsystemStates;
     Set<BaseSubsystem> requiredSubsystems;
 
+    /**
+     * 
+     * @param states all the states for each subsystem that they should be in during this phase of the sequence
+     */
     public SequencePhase(ISubsystemState... states) {
         subsystemStates = Arrays.asList(states);
+        path = null;
     }
 
-    public SequencePhase(int pathIndex, ISubsystemState... states) {
-        this.pathIndex = pathIndex;
+    /**
+     * 
+     * @param path the autonomous path to follow during this phase of the sequence
+     * @param states all the states for each subsystem that they should be in during this phase of the sequence
+     */
+    public SequencePhase(PathPlannerFollower path, ISubsystemState... states) {
+        this.path = path;
         subsystemStates = Arrays.asList(states);
     }
 
+    /**
+     * 
+     * @return the set of subsystems required by the phase
+     */
     public Set<BaseSubsystem> getRequiredSubsystems() {
         return requiredSubsystems = subsystemStates.stream().map(state -> state.getSubsystem()).collect(Collectors.toSet());
     }
 
+    /**
+     * Requires all of the subsystems by the associated sequence for this phase
+     * 
+     * @param sequence the associated sequence of the phase
+     * @return true if require is successful
+     */
     public boolean requireSubsystems(BaseSequence<? extends ISequencePhase> sequence) {
         for (ISubsystemState state : subsystemStates) {
             if (state.getSubsystem().isRequiredByAnother(sequence)) {
@@ -42,12 +69,11 @@ public class SequencePhase {
         return true;
     }
 
-    public PathPlannerFollower getPath(BaseAutonSequence<? extends ISequencePhase> sequence) {
-        if (pathIndex >= 0 && pathIndex < sequence.getPaths().size()) {
-            return sequence.getPaths().get(pathIndex);
-        }
-        System.out.println("ERROR: Tried to get path for state that doesn't have a valid path");
-        return null;
+    /**
+     * 
+     * @return autonomous path followed during the phase
+     */
+    public PathPlannerFollower getPath() {
+        return path;
     }
-
 }
