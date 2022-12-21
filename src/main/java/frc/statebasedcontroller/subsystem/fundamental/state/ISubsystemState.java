@@ -6,9 +6,9 @@ public interface ISubsystemState<BaseS extends BaseSubsystem> {
 
     /**
      * 
-     * @return the instance of {@link BaseSubsystem} associated with the enum of the state for the subystem
+     * @return the instance of the associated subsystem state instance
      */
-    BaseSubsystem getState();
+    SubsystemState<BaseS> getState();
 
     /**
      * 
