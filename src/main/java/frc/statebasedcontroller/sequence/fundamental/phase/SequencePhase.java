@@ -12,30 +12,29 @@ import frc.statebasedcontroller.subsystem.fundamental.state.SubsystemState;
 import frc.statebasedcontroller.subsystem.fundamental.subsystem.BaseSubsystem;
 
 /**
- * This sequence phase class encapsulates the required {@link BaseSubsystem subsystems},
- * the associated {@link SubsystemState states}, and the {@link PathPlannerFollower path}.
- * 
- * The required subsystems are here, so {@link #requireSubsystems(BaseSequence) requireSubsystems}
- * is in this class.
+ * This sequence phase class encapsulates the required {@link BaseSubsystem
+ * subsystems}, the associated {@link SubsystemState states}, and the
+ * {@link PathPlannerFollower path}. The required subsystems are here, so
+ * {@link #requireSubsystems(BaseSequence) requireSubsystems} is in this class.
  */
 public class SequencePhase {
-
     int pathIndex = -1;
     List<ISubsystemState> subsystemStates;
     Set<BaseSubsystem> requiredSubsystems;
 
     /**
-     * 
-     * @param states all the states for each subsystem that they should be in during this phase of the sequence
+     * @param states all the states for each subsystem that they should be in during
+     *               this phase of the sequence
      */
     public SequencePhase(ISubsystemState... states) {
         subsystemStates = Arrays.asList(states);
     }
 
     /**
-     * 
-     * @param pathIndex the desired path index in the list of paths the phase of the auton sequence
-     * @param states all the states for each subsystem that they should be in during this phase of the sequence
+     * @param pathIndex the desired path index in the list of paths the phase of the
+     *                  auton sequence
+     * @param states    all the states for each subsystem that they should be in
+     *                  during this phase of the sequence
      */
     public SequencePhase(int pathIndex, ISubsystemState... states) {
         this.pathIndex = pathIndex;
@@ -43,7 +42,6 @@ public class SequencePhase {
     }
 
     /**
-     * 
      * @return the set of subsystems required by the phase
      */
     public Set<BaseSubsystem> getRequiredSubsystems() {
@@ -54,6 +52,7 @@ public class SequencePhase {
      * Requires all of the subsystems by the associated sequence for this phase
      * 
      * @param sequence the associated sequence of the phase
+     * 
      * @return true if require is successful
      */
     public boolean requireSubsystems(BaseSequence<? extends ISequencePhase> sequence) {
@@ -69,7 +68,6 @@ public class SequencePhase {
     }
 
     /**
-     * 
      * @return index of the path to be followed
      */
     public int getPathIndex() {
