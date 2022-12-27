@@ -81,9 +81,11 @@ public abstract class BaseAutonSequence<SeqP extends ISequencePhase> extends Bas
     void setPathPlannerFollowerAtStartOfState(boolean setInitialPositionAndHeading) {
         if (getPhaseFirstRunThrough()) {
             setPathPlannerFollower();
-            getPlannerFollower().resetStart();
-            getBaseDriveSubsystem().setPathPlannerFollower(getPlannerFollower(), setInitialPositionAndHeading);
-            alreadySetInitialPosition = true;
+            if (getPathPlannerFollowers() != null) {
+                getPlannerFollower().resetStart();
+                getBaseDriveSubsystem().setPathPlannerFollower(getPlannerFollower(), setInitialPositionAndHeading);
+                alreadySetInitialPosition = true;
+            }
         }
     }
 
