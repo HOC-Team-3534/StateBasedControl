@@ -109,7 +109,7 @@ public abstract class BaseAutonSequence<SeqP extends ISequencePhase> extends Bas
      */
     void setPathPlannerFollower() {
         int index = getPhase().getPhase().getPathIndex();
-        if (index > 0 && !(index >= getPathPlannerFollowers().size())) {
+        if (index >= 0 && !(index >= getPathPlannerFollowers().size())) {
             this.pathPlannerFollower = getPathPlannerFollowers().get(index);
         }
     }
