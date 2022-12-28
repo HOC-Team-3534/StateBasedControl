@@ -58,6 +58,7 @@ public abstract class BaseAutonSequence<SeqP extends ISequencePhase> extends Bas
      * 
      * @return successfully required subsystems and switch phase of sequence
      */
+    @Override
     boolean setPhase(SeqP phase) {
         if (phase.getPhase().requireSubsystems(this)) {
             this.phase = phase;
