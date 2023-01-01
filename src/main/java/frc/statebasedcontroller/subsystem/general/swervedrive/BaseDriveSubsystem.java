@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import frc.pathplanner.PathPlannerFollower;
+import frc.pathplanner.config.PathPlannerConfig;
 import frc.statebasedcontroller.config.DriveSpeedsConfig;
 import frc.statebasedcontroller.subsystem.fundamental.state.ISubsystemState;
 import frc.statebasedcontroller.subsystem.fundamental.subsystem.BaseSubsystem;
@@ -20,6 +21,8 @@ import frc.wpiClasses.QuadSwerveSim;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 /**
  * An extension of {@link BaseSubsystem}, the base drive subsystem is a
@@ -243,7 +246,12 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * module states
      */
     public void setModuleStatesAutonomous() {
-        dt.goToPose(this.getPathPlannerFollower().getCurrentState());
+        PathPlannerState currState = this.getPathPlannerFollower().getCurrentState();
+        if (currState.poseMeters.getTranslation().getDistance(getPose().getTranslation()) > 0.150 && PathPlannerConfig.USE_DIST_CORRECTION_MODE) {
+            this.getPathPlannerFollower().shiftTimeToClosestPoint(getPose());
+            currState = this.getPathPlannerFollower().getCurrentState();
+        }
+        dt.goToPose(currState);
     }
 
     /**

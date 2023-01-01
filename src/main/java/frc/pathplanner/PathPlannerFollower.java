@@ -1,8 +1,15 @@
 package frc.pathplanner;
 
+import java.util.List;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.Trajectory.State;
+import frc.pathplanner.config.PathPlannerConfig;
 
 /**
  * The core of being able to follow a {@link PathPlannerTrajectory} from a .path
@@ -65,7 +72,56 @@ public class PathPlannerFollower {
      */
     public PathPlannerTrajectory.PathPlannerState getCurrentState() {
         double timeSinceStart = (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
-        return (PathPlannerTrajectory.PathPlannerState) path.sample(timeSinceStart);
+        return (PathPlannerTrajectory.PathPlannerState) path.sample(timeSinceStart + PathPlannerConfig.LOOK_AHEAD_TIME);
+    }
+
+    /**
+     * Shift the time being used to sample the trajectory to the closest point on
+     * the path within a window of time, set in {@link PathPlannerConfig}
+     * 
+     * @param robotPose the current pose of the robot
+     */
+    public void shiftTimeToClosestPoint(Pose2d robotPose) {
+        double currTime = getClosestStateTime(robotPose);
+        START_TIME += (int) (currTime * 1000) - getTimeSinceStart();
+    }
+
+    int getIndexForTime(PathPlannerTrajectory traj, double time) {
+        int low = 0;
+        int high = traj.getStates().size() - 1;
+        while (low != high) {
+            int mid = (low + high) / 2;
+            if (traj.getState(mid).timeSeconds < time) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
+    }
+
+    protected PathPlannerTrajectory getRelativelyCloseTrajectory(PathPlannerTrajectory traj,
+                                                                 double time, double window) {
+        double startTime = time - window / 2;
+        double endTime = time + window / 2;
+        int startIndex = getIndexForTime(traj, startTime);
+        int endIndex = getIndexForTime(traj, endTime);
+        List<State> states = traj.getStates().subList(startIndex, endIndex);
+        return (PathPlannerTrajectory) new Trajectory(states);
+    }
+
+    protected double getClosestStateTime(Pose2d robotPose) {
+        PathPlannerTrajectory traj = getRelativelyCloseTrajectory(this.path, getTimeSinceStart(), PathPlannerConfig.RESET_WINDOW_SIZE);
+        int index = 0;
+        double lowestDist = traj.getState(0).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
+        for (int i = 1; i < traj.getStates().size(); i += 2) {
+            double dist = traj.getState(i).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
+            if (dist < lowestDist) {
+                index = i;
+                lowestDist = dist;
+            }
+        }
+        return traj.getState(index).timeSeconds;
     }
 
     /**
@@ -75,12 +131,15 @@ public class PathPlannerFollower {
         return path.getInitialState();
     }
 
+    private double getTimeSinceStart() {
+        return (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
+    }
+
     /**
      * @return the remaining time to completely follow the path
      */
     public double getRemainingTimeSeconds() {
-        double timeSinceStart = (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
-        return path.getTotalTimeSeconds() - timeSinceStart;
+        return path.getTotalTimeSeconds() - getTimeSinceStart();
     }
 
     /**
