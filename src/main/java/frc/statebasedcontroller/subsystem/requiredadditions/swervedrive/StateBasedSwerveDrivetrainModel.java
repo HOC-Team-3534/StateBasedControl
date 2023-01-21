@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -80,12 +81,11 @@ public class StateBasedSwerveDrivetrainModel {
         // Measured in expected standard deviation (meters of position and degrees of
         // rotation)
         var visionMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
-        m_poseEstimator = new SwerveDrivePoseEstimator(getGyroscopeRotation(),
+        m_poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.KINEMATICS,
+                                                       getGyroscopeRotation(),
+                                                       (SwerveModulePosition[]) realModules.stream().map(m -> m.getPosition()).toArray(),
                                                        SwerveConstants.DFLT_START_POSE,
-                                                       SwerveConstants.KINEMATICS, stateStdDevs,
-                                                       localMeasurementStdDevs,
-                                                       visionMeasurementStdDevs,
-                                                       SimConstants.CTRLS_SAMPLE_RATE_SEC);
+                                                       stateStdDevs, visionMeasurementStdDevs);
         setKnownPose(SwerveConstants.DFLT_START_POSE);
         dtPoseView = new PoseTelemetry(swerveDt, m_poseEstimator);
         // Control Orientation Chooser
@@ -207,7 +207,7 @@ public class StateBasedSwerveDrivetrainModel {
     public void setKnownPose(Pose2d in) {
         resetWheelEncoders();
         gyro.zeroGyroscope(in.getRotation().getDegrees());
-        m_poseEstimator.resetPosition(in, getGyroscopeRotation());
+        m_poseEstimator.resetPosition(getGyroscopeRotation(), (SwerveModulePosition[]) realModules.stream().map(m -> m.getPosition()).toArray(), in);
         curEstPose = in;
     }
 
