@@ -65,7 +65,7 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * modules to the modules and updates the simulation if in simulation mode
      */
     public void process() {
-        dt.getPoseEstimator().update(dt.getGyroscopeRotation(), (SwerveModulePosition[]) modules.stream().map(m -> m.getPosition()).toArray());
+        dt.getPoseEstimator().update(dt.getGyroscopeRotation(), dt.getPositions());
         dt.updateTelemetry();
         super.process();
         sendStates();

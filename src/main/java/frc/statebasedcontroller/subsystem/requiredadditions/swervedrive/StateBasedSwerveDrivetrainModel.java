@@ -82,8 +82,7 @@ public class StateBasedSwerveDrivetrainModel {
         // rotation)
         var visionMeasurementStdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1));
         m_poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.KINEMATICS,
-                                                       getGyroscopeRotation(),
-                                                       (SwerveModulePosition[]) realModules.stream().map(m -> m.getPosition()).toArray(),
+                                                       getGyroscopeRotation(), getPositions(),
                                                        SwerveConstants.DFLT_START_POSE,
                                                        stateStdDevs, visionMeasurementStdDevs);
         setKnownPose(SwerveConstants.DFLT_START_POSE);
@@ -207,7 +206,7 @@ public class StateBasedSwerveDrivetrainModel {
     public void setKnownPose(Pose2d in) {
         resetWheelEncoders();
         gyro.zeroGyroscope(in.getRotation().getDegrees());
-        m_poseEstimator.resetPosition(getGyroscopeRotation(), (SwerveModulePosition[]) realModules.stream().map(m -> m.getPosition()).toArray(), in);
+        m_poseEstimator.resetPosition(getGyroscopeRotation(), getPositions(), in);
         curEstPose = in;
     }
 
@@ -269,5 +268,13 @@ public class StateBasedSwerveDrivetrainModel {
             input.m_rotation = 0.0; // 001;
         }
         return input;
+    }
+
+    public SwerveModulePosition[] getPositions() {
+        SwerveModulePosition[] positions = new SwerveModulePosition[QuadSwerveSim.NUM_MODULES];
+        for (int i = 0; i < QuadSwerveSim.NUM_MODULES; i++) {
+            positions[i] = realModules.get(i).getPosition();
+        }
+        return positions;
     }
 }
