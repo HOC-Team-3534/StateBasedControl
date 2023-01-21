@@ -4,10 +4,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.drive.Vector2d;
 import frc.pathplanner.PathPlannerFollower;
 import frc.pathplanner.config.PathPlannerConfig;
 import frc.statebasedcontroller.config.DriveSpeedsConfig;
@@ -18,6 +18,7 @@ import frc.swervelib.SwerveConstants;
 import frc.swervelib.SwerveInput;
 import frc.swervelib.SwerveModule;
 import frc.wpiClasses.QuadSwerveSim;
+import frc.wpiClasses.Vector2d;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -64,6 +65,7 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * modules to the modules and updates the simulation if in simulation mode
      */
     public void process() {
+        dt.getPoseEstimator().update(dt.getGyroscopeRotation(), (SwerveModulePosition[]) modules.stream().map(m -> m.getPosition()).toArray());
         dt.updateTelemetry();
         super.process();
         sendStates();
@@ -84,7 +86,6 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
             modules.get(1).set(states[1].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[1].angle.getRadians());
             modules.get(2).set(states[2].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[2].angle.getRadians());
             modules.get(3).set(states[3].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[3].angle.getRadians());
-            dt.getPoseEstimator().update(dt.getGyroscopeRotation(), states[0], states[1], states[2], states[3]);
         }
     }
 
@@ -247,7 +248,8 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      */
     public void setModuleStatesAutonomous() {
         PathPlannerState currState = this.getPathPlannerFollower().getCurrentState();
-        if (currState.poseMeters.getTranslation().getDistance(getPose().getTranslation()) > 0.150 && PathPlannerConfig.USE_DIST_CORRECTION_MODE) {
+        if (currState.poseMeters.getTranslation().getDistance(getPose().getTranslation()) > 0.150
+            && PathPlannerConfig.USE_DIST_CORRECTION_MODE) {
             this.getPathPlannerFollower().shiftTimeToClosestPoint(getPose());
             currState = this.getPathPlannerFollower().getCurrentState();
         }

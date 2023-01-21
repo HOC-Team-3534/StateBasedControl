@@ -1,13 +1,13 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id "edu.wpi.first.GradleRIO" version "2022.4.1"
+    id "edu.wpi.first.GradleRIO" version "2023.2.1"
 }
 
 group = 'com.github.HOC-Team-3534'
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 dependencies {
     implementation wpi.java.deps.wpilib()
