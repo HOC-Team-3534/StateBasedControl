@@ -100,28 +100,27 @@ public class PathPlannerFollower {
         return low;
     }
 
-    protected PathPlannerTrajectory getRelativelyCloseTrajectory(PathPlannerTrajectory traj,
-                                                                 double time, double window) {
-        double startTime = time - window / 2;
-        double endTime = time + window / 2;
-        int startIndex = getIndexForTime(traj, startTime);
-        int endIndex = getIndexForTime(traj, endTime);
-        List<State> states = traj.getStates().subList(startIndex, endIndex);
-        return (PathPlannerTrajectory) new Trajectory(states);
-    }
-
     protected double getClosestStateTime(Pose2d robotPose) {
-        PathPlannerTrajectory traj = getRelativelyCloseTrajectory(this.path, getTimeSinceStart(), PathPlannerConfig.RESET_WINDOW_SIZE);
         int index = 0;
-        double lowestDist = traj.getState(0).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
-        for (int i = 1; i < traj.getStates().size(); i += 2) {
-            double dist = traj.getState(i).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
+        int totalSize = this.path.getStates().size();
+        double lowestDist = this.path.getState(0).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
+        for (int i = 1; i < totalSize; i += 100) {
+            double dist = this.path.getState(i).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
             if (dist < lowestDist) {
                 index = i;
                 lowestDist = dist;
             }
         }
-        return traj.getState(index).timeSeconds;
+        int filteredStart = (index - 100 < 0) ? 0 : index - 100;
+        int filteredEnd = (index + 100 > totalSize) ? totalSize : index + 100;
+        for (int i = filteredStart; i < filteredEnd; i += 2) {
+            double dist = this.path.getState(i).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
+            if (dist < lowestDist) {
+                index = i;
+                lowestDist = dist;
+            }
+        }
+        return this.path.getState(index).timeSeconds;
     }
 
     /**
