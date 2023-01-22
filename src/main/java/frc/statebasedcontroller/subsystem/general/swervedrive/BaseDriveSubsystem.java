@@ -13,10 +13,10 @@ import frc.pathplanner.config.PathPlannerConfig;
 import frc.statebasedcontroller.config.DriveSpeedsConfig;
 import frc.statebasedcontroller.subsystem.fundamental.state.ISubsystemState;
 import frc.statebasedcontroller.subsystem.fundamental.subsystem.BaseSubsystem;
-import frc.statebasedcontroller.subsystem.requiredadditions.swervedrive.StateBasedSwerveDrivetrainModel;
 import frc.swervelib.SwerveConstants;
+import frc.swervelib.SwerveDrivetrainModel;
 import frc.swervelib.SwerveInput;
-import frc.swervelib.SwerveModule;
+import frc.swervelib.interfaces.SwerveModule;
 import frc.wpiClasses.QuadSwerveSim;
 import frc.wpiClasses.Vector2d;
 
@@ -34,7 +34,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
  */
 public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends BaseSubsystem<SsS> {
     static Rotation2d targetShootRotationAngle = new Rotation2d();
-    final StateBasedSwerveDrivetrainModel dt;
+    final SwerveDrivetrainModel dt;
     ArrayList<SwerveModule> modules = new ArrayList<SwerveModule>(QuadSwerveSim.NUM_MODULES);
     double frontLeft_stateAngle = 0.0, frontRight_stateAngle = 0.0, backLeft_stateAngle = 0.0,
                     backRight_stateAngle = 0.0;
@@ -49,7 +49,7 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * @param neutralState the state, typically labeled NEUTRAL, where no calls are
      *                     made to components unless to turn them off.
      */
-    public BaseDriveSubsystem(StateBasedSwerveDrivetrainModel dt, SwerveDriveKinematics kinematics,
+    public BaseDriveSubsystem(SwerveDrivetrainModel dt, SwerveDriveKinematics kinematics,
                               SsS neutralState) {
         super(neutralState);
         this.dt = dt;
@@ -82,10 +82,10 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
         SwerveModuleState[] states = dt.getSwerveModuleStates();
         if (states != null) {
             SwerveDriveKinematics.desaturateWheelSpeeds(states, SwerveConstants.MAX_FWD_REV_SPEED_MPS);
-            modules.get(0).set(states[0].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[0].angle.getRadians());
-            modules.get(1).set(states[1].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[1].angle.getRadians());
-            modules.get(2).set(states[2].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[2].angle.getRadians());
-            modules.get(3).set(states[3].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[3].angle.getRadians());
+            modules.get(0).set(states[0].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[0].angle);
+            modules.get(1).set(states[1].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[1].angle);
+            modules.get(2).set(states[2].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[2].angle);
+            modules.get(3).set(states[3].speedMetersPerSecond / SwerveConstants.MAX_FWD_REV_SPEED_MPS * SwerveConstants.MAX_VOLTAGE, states[3].angle);
         }
     }
 
