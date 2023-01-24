@@ -166,7 +166,7 @@ public class SwerveDrivetrainModel {
         return input;
     }
 
-    static class Configuration {
+    public static class Configuration {
         final double kMaxRobotSpeed, kMaxRobotAngularVelocity,
                         kMaxRobotAnglularAcceleration;
         final double kAutonDrivekP, kAutonSteerKp;

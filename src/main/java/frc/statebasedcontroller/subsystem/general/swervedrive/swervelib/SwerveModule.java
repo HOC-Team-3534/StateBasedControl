@@ -268,7 +268,7 @@ public class SwerveModule {
     }
   }
 
-  static class Tunings {
+  public static class Tunings {
     final double kMaxSpeed, kMaxAngularVelocity, kMaxAngularAcceleration;
     final double kDriveKp, kDriveKs, kDriveKv, kSteerKp, kSteerKs, kSteerKv;
 
