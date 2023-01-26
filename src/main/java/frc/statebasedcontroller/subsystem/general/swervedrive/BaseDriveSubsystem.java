@@ -138,7 +138,7 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * @return the current gyroscope rotation
      */
     public Rotation2d getGyroRotation() {
-        return dt.getPose().getRotation();
+        return dt.getGyroHeading();
     }
 
     /**
