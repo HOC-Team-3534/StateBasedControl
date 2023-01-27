@@ -3,6 +3,8 @@
     "Analysis Type": "General Mechanism",
     "NetworkTables Settings": {
       "serverTeam": "3534"
-    }
+    },
+    "mode": "Client (NT4)",
+    "serverTeam": "3534"
   }
 }

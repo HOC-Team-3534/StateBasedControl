@@ -6,6 +6,7 @@ package frc.statebasedcontroller.subsystem.general.swervedrive.swervelib;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -87,6 +88,7 @@ public class SwerveModule {
     // Limit the PID Controller's input range between -pi and pi and set the input
     // to be continuous.
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+    steerController.resetToAbsolute();
   }
 
   /**
@@ -132,10 +134,49 @@ public class SwerveModule {
     m_steerController.setVoltage(turnOutput + turnFeedforward);
   }
 
+  /**
+   * Use for characterizing the drive only. Steer set to 0
+   * 
+   * @param voltage the voltage to set the drive motor to
+   */
+  public void setDriveVoltageForCharacterization(double voltage) {
+    m_driveController.setVoltage(voltage);
+    m_steerController.setVoltage(0);
+  }
+
+  /**
+   * Use for characterizing a steering motor only. Drive set to 0
+   * 
+   * @param voltage the voltage to set the steer motor to
+   */
+  public void setSteerVoltageForCharacterization(double voltage) {
+    m_steerController.setVoltage(voltage);
+    m_driveController.setVoltage(0);
+  }
+
+  /**
+   * @return the drive motor voltage and velocity in meters per second of the
+   *         wheel
+   */
+  public Pair<Double, Double> getDriveVoltageAndRate() {
+    return new Pair<>(m_driveController.getVoltage(),
+                      m_driveController.getRate());
+  }
+
+  /**
+   * @return the steer motor voltage and angular velocity in radians per second
+   *         of the wheel vertical axel
+   */
+  public Pair<Double, Double> getSteerVoltageAndRate() {
+    return new Pair<>(m_steerController.getVoltage(),
+                      m_steerController.getRate().getRadians());
+  }
+
   private static class BasicDriveController implements IDriveController {
     final MotorController driveMotor;
     final Encoder driveEncoder;
     final int kEncoderResolution = 4096;
+    double lastVoltage;
 
     BasicDriveController(MotorController driveMotor, Encoder driveEncoder) {
       this.driveMotor = driveMotor;
@@ -160,6 +201,12 @@ public class SwerveModule {
     @Override
     public void setVoltage(double voltage) {
       driveMotor.setVoltage(voltage);
+      lastVoltage = voltage;
+    }
+
+    @Override
+    public double getVoltage() {
+      return lastVoltage;
     }
   }
 
@@ -167,6 +214,7 @@ public class SwerveModule {
     final MotorController steerMotor;
     final Encoder steerEncoder;
     final int kEncoderResolution = 4096;
+    double lastVoltage;
 
     BasicSteerController(MotorController steerMotor, Encoder steerEncoder) {
       this.steerMotor = steerMotor;
@@ -186,6 +234,22 @@ public class SwerveModule {
     @Override
     public void setVoltage(double voltage) {
       steerMotor.setVoltage(voltage);
+      lastVoltage = voltage;
+    }
+
+    @Override
+    public void resetToAbsolute() {
+      // No Absolute Encoder for this Setup
+    }
+
+    @Override
+    public Rotation2d getRate() {
+      return new Rotation2d(steerEncoder.getRate());
+    }
+
+    @Override
+    public double getVoltage() {
+      return lastVoltage;
     }
   }
 
@@ -217,6 +281,11 @@ public class SwerveModule {
     @Override
     public void setVoltage(double voltage) {
       driveMotor.setVoltage(voltage);
+    }
+
+    @Override
+    public double getVoltage() {
+      return driveMotor.getMotorOutputVoltage();
     }
   }
 
@@ -255,16 +324,31 @@ public class SwerveModule {
       if (Math.abs(steerMotor.getSelectedSensorVelocity() * 10 * kRadiansPerTick) < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
         if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
           resetIteration = 0;
-          double absoluteAngle
-                  = Rotation2d.fromDegrees(absoluteEncoder.getAbsolutePosition()).minus(angleOffset).getRadians();
-          // Be aware. DO NOT USE kI or kD with the PID controller for steering or this
-          // reseed will cause issues
-          steerMotor.setSelectedSensorPosition(-absoluteAngle / kRadiansPerTick);
+          resetToAbsolute();
         }
       } else {
         resetIteration = 0;
       }
       steerMotor.setVoltage(voltage);
+    }
+
+    @Override
+    public void resetToAbsolute() {
+      double absoluteAngle
+              = Rotation2d.fromDegrees(absoluteEncoder.getAbsolutePosition()).minus(angleOffset).getRadians();
+      // Be aware. DO NOT USE kI or kD with the PID controller for steering or this
+      // reseed will cause issues
+      steerMotor.setSelectedSensorPosition(-absoluteAngle / kRadiansPerTick);
+    }
+
+    @Override
+    public Rotation2d getRate() {
+      return new Rotation2d(steerMotor.getSelectedSensorVelocity() * 10 * kRadiansPerTick);
+    }
+
+    @Override
+    public double getVoltage() {
+      return steerMotor.getMotorOutputVoltage();
     }
   }
 
@@ -295,6 +379,8 @@ interface IDriveController {
    */
   void setDistancePerEncoderShaftRotation(double motorRotsToMeters);
 
+  double getVoltage();
+
   /**
    * @return the velocity in meters per second
    */
@@ -317,6 +403,12 @@ interface ISteerController {
    *                           encoder to radians turned at the module axle
    */
   void setDistancePerEncoderShaftRotation(double motorRotsToRadians);
+
+  double getVoltage();
+
+  Rotation2d getRate();
+
+  void resetToAbsolute();
 
   Rotation2d getRotation2d();
 

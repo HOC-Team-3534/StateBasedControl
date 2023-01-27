@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveDrivetrainModel {
-    public final int NUM_MODULES = 4;
+    public final static int NUM_MODULES = 4;
     final SwerveModule[] modules = new SwerveModule[NUM_MODULES];
     final Gyro gyro;
     final SwerveDriveKinematics kinematics;
@@ -111,6 +111,12 @@ public class SwerveDrivetrainModel {
         }
     }
 
+    public void setVoltageToZero() {
+        for (int i = 0; i < NUM_MODULES; i++) {
+            modules[i].setDriveVoltageForCharacterization(0);
+        }
+    }
+
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
@@ -164,6 +170,10 @@ public class SwerveDrivetrainModel {
             input.m_rotation = 0.0; // 001;
         }
         return input;
+    }
+
+    public SwerveModule[] getSwerveModules() {
+        return modules;
     }
 
     public static class Configuration {
