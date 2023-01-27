@@ -247,7 +247,7 @@ public class SwerveModule {
 
     @Override
     public Rotation2d getRotation2d() {
-      return new Rotation2d(steerMotor.getSelectedSensorPosition() * kRadiansPerTick);
+      return new Rotation2d(-steerMotor.getSelectedSensorPosition() * kRadiansPerTick);
     }
 
     @Override
@@ -259,7 +259,7 @@ public class SwerveModule {
                   = Rotation2d.fromDegrees(absoluteEncoder.getAbsolutePosition()).minus(angleOffset).getRadians();
           // Be aware. DO NOT USE kI or kD with the PID controller for steering or this
           // reseed will cause issues
-          steerMotor.setSelectedSensorPosition(absoluteAngle / kRadiansPerTick);
+          steerMotor.setSelectedSensorPosition(-absoluteAngle / kRadiansPerTick);
         }
       } else {
         resetIteration = 0;
