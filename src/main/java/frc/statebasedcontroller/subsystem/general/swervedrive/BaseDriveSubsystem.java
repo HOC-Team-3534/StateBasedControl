@@ -276,7 +276,7 @@ class FeedForwardCharacterizationData {
                         = accelerationDataArray[accelerationDataArray.length - 2];
         PolynomialRegression regression
                         = new PolynomialRegression(velocityDataArray,
-                                                   voltageDataArray, 1);
+                                                   voltageDataArray, 2);
         double residualsVoltageVelocityWise[]
                         = new double[velocityDataArray.length];
         for (int i = 0; i < velocityDataArray.length; i++) {
@@ -286,7 +286,7 @@ class FeedForwardCharacterizationData {
         PolynomialRegression accelerationRegression
                         = new PolynomialRegression(accelerationDataArray,
                                                    residualsVoltageVelocityWise,
-                                                   1);
+                                                   2);
         System.out.println("FF Characterization Results:");
         System.out.println("\tCount=" + Integer.toString(velocityData.size())
                            + "");
