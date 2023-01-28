@@ -287,7 +287,7 @@ public class SwerveModule {
 
     @Override
     public double getVoltage() {
-      return driveMotor.getMotorOutputVoltage();
+      return driveMotor.getMotorOutputVoltage() * ((inverted) ? -1 : 1);
     }
   }
 
@@ -352,7 +352,7 @@ public class SwerveModule {
 
     @Override
     public double getVoltage() {
-      return steerMotor.getMotorOutputVoltage();
+      return steerMotor.getMotorOutputVoltage() * ((inverted) ? -1 : 1);
     }
   }
 
