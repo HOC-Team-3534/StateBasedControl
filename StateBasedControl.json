@@ -1,7 +1,7 @@
 {
   "fileName": "StateBasedControl.json",
   "name": "statebasedcontrol",
-  "version": "2023.1.6",
+  "version": "2023.1.7",
   "uuid": "f0571c82-3b3f-11ed-a261-0242ac120002",
   "mavenUrls": [
     "https://jitpack.io"
@@ -11,7 +11,7 @@
     {
       "groupId": "com.github.HOC-Team-3534",
       "artifactId": "StateBasedControl",
-      "version": "2023.1.6"
+      "version": "2023.1.7"
     }
   ],
   "jniDependencies": [],

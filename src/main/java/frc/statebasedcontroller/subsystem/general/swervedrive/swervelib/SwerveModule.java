@@ -257,10 +257,12 @@ public class SwerveModule {
     final WPI_TalonFX driveMotor;
     final int kEncoderResolution = 2048;
     double kMetersPerTick;
+    final boolean inverted;
 
     FalconDriveController(WPI_TalonFX driveMotor, boolean inverted) {
       this.driveMotor = driveMotor;
       this.driveMotor.setInverted(inverted);
+      this.inverted = inverted;
     }
 
     @Override
@@ -280,7 +282,7 @@ public class SwerveModule {
 
     @Override
     public void setVoltage(double voltage) {
-      driveMotor.setVoltage(voltage);
+      driveMotor.setVoltage(voltage * ((inverted) ? -1 : 1));
     }
 
     @Override
