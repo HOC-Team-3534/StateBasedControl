@@ -299,6 +299,7 @@ public class SwerveModule {
     private static final int ENCODER_RESET_ITERATIONS = 500;
     private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY
             = Math.toRadians(0.5);
+    final boolean inverted;
 
     FalconCANCoderSteerController(WPI_TalonFX steerMotor,
                                   CANCoder absoluteEncoder,
@@ -307,6 +308,7 @@ public class SwerveModule {
       this.steerMotor.setInverted(inverted);
       this.absoluteEncoder = absoluteEncoder;
       this.angleOffset = angleOffset;
+      this.inverted = inverted;
     }
 
     @Override
@@ -329,7 +331,7 @@ public class SwerveModule {
       } else {
         resetIteration = 0;
       }
-      steerMotor.setVoltage(voltage);
+      steerMotor.setVoltage(voltage * ((inverted) ? -1 : 1));
     }
 
     @Override
