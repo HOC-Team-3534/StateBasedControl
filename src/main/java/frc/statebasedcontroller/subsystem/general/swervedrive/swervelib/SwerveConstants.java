@@ -7,6 +7,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
@@ -18,12 +19,18 @@ public class SwerveConstants {
     public static SDSModuleConfiguration moduleConfiguration;
     public static double driveKP, driveKS, driveKV, driveKA;
     //only need to set steer values if using basic swerve module
-    public static double steerKP, steerKS, steerKV, steerKA;
+    public static double steerKP, steerKS, steerKV, steerKA, steerKI, steerKD,
+                    steerKF;
     public static double autonDriveKP, autonSteerKP;
     public static double fastDriveProp, fastSteerProp, slowDriveProp,
                     slowSteerProp;
     public static NeutralMode driveNeutralMode = NeutralMode.Brake,
                     angleNeutralMode = NeutralMode.Coast;
+    public static IdleMode driveIdleMode
+                    = (driveNeutralMode == NeutralMode.Brake) ? IdleMode.kBrake
+                                                              : IdleMode.kCoast,
+                    angleIdleMode = (angleNeutralMode == NeutralMode.Brake) ? IdleMode.kBrake
+                                                                            : IdleMode.kCoast;
     public static boolean angleEnableCurrentLimit = true,
                     driveEnableCurrentLimit = true;
     public static int angleContinuousCurrentLimit = 25,
