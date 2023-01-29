@@ -111,7 +111,21 @@ public class SwerveModule implements ISwerveModule {
    */
   public void setDriveVoltageForCharacterization(double voltage) {
     m_driveController.setVoltage(voltage);
-    m_steerController.setVoltage(0);
+    switch (moduleType) {
+      case Basic:
+        m_steerController.setVoltage(0);
+        break;
+
+      case FalconFalconCanCoder:
+        // need to send more than 1% speed otherwise it wont set the angle b/c of the nice 
+        // filter to  reduce jittering, but it doesnt actually set the speed for drive
+        // to 1 meter per second
+        m_steerController.setAngle(new SwerveModuleState(1, new Rotation2d()));
+        break;
+
+      default:
+        break;
+    }
   }
 
   /**
