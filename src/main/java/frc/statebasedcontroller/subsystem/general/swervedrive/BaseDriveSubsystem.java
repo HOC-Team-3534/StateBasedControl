@@ -170,8 +170,9 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * @param chassisSpeeds the speed in each resprect that the robot that is
      *                      currently desired
      */
-    protected void setModuleStates(ChassisSpeeds chassisSpeeds) {
-        dt.setModuleStates(chassisSpeeds);
+    protected void setModuleStates(ChassisSpeeds chassisSpeeds,
+                                   boolean isOpenLoop) {
+        dt.setModuleStates(chassisSpeeds, isOpenLoop);
     }
 
     /**
@@ -185,8 +186,9 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * @param rot the proportion (-1 to 1) in the counterclockwise and clockwise
      *            direction to drive the robot
      */
-    protected void setModuleStates(double x, double y, double rot) {
-        dt.setModuleStates(new SwerveInput(x, y, rot), false);
+    protected void setModuleStates(double x, double y, double rot,
+                                   boolean isOpenLoop) {
+        dt.setModuleStates(new SwerveInput(x, y, rot), false, isOpenLoop);
     }
 
     /**
@@ -200,8 +202,9 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
      * @param rot the proportion (-1 to 1) in the counterclockwise and clockwise
      *            direction to drive the robot cut to creep proportion
      */
-    protected void setModuleStatesCreep(double x, double y, double rot) {
-        dt.setModuleStates(new SwerveInput(x, y, rot), true);
+    protected void setModuleStatesCreep(double x, double y, double rot,
+                                        boolean isOpenLoop) {
+        dt.setModuleStates(new SwerveInput(x, y, rot), true, isOpenLoop);
     }
 
     /**

@@ -24,9 +24,7 @@ public class SwerveDrivetrainModel {
     public final static int NUM_MODULES = 4;
     final SwerveModule[] modules = new SwerveModule[NUM_MODULES];
     final Gyro gyro;
-    final SwerveDriveKinematics kinematics;
     final SwerveDrivePoseEstimator poseEstimator;
-    final Configuration config;
     private static final SendableChooser<String> orientationChooser
                     = new SendableChooser<>();
     Rotation2d gyroOffset = new Rotation2d();
@@ -35,35 +33,31 @@ public class SwerveDrivetrainModel {
     public SwerveDrivetrainModel(SwerveModule frontLeftModule,
                                  SwerveModule frontRightModule,
                                  SwerveModule backLeftModule,
-                                 SwerveModule backRighModule, Gyro gyro,
-                                 SwerveDriveKinematics kinematics,
-                                 Configuration config) {
+                                 SwerveModule backRighModule, Gyro gyro) {
         modules[0] = frontLeftModule;
         modules[1] = frontRightModule;
         modules[2] = backLeftModule;
         modules[3] = backRighModule;
         this.gyro = gyro;
-        this.kinematics = kinematics;
         /*
          * Here we use SwerveDrivePoseEstimator so that we can fuse odometry
          * readings. The numbers used below are robot specific, and should be
          * tuned.
          */
-        poseEstimator = new SwerveDrivePoseEstimator(kinematics,
+        poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.kinematics,
                                                      getGyroHeading(),
                                                      getModulePositions(),
                                                      new Pose2d(),
                                                      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO tune standard devs
                                                      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // TODO tune standard devs
-        this.config = config;
-        holo = new HolonomicDriveController(new PIDController(config.kAutonDrivekP,
+        holo = new HolonomicDriveController(new PIDController(SwerveConstants.autonDriveKP,
                                                               0, 0),
-                                            new PIDController(config.kAutonDrivekP,
+                                            new PIDController(SwerveConstants.autonDriveKP,
                                                               0, 0),
-                                            new ProfiledPIDController(config.kAutonSteerKp,
+                                            new ProfiledPIDController(SwerveConstants.autonSteerKP,
                                                                       0, 0,
-                                                                      new TrapezoidProfile.Constraints(config.kMaxRobotAngularVelocity,
-                                                                                                       config.kMaxRobotAnglularAcceleration)));
+                                                                      new TrapezoidProfile.Constraints(SwerveConstants.robotMaxAngularVel,
+                                                                                                       SwerveConstants.robotMaxAngularAccel)));
         orientationChooser.setDefaultOption("Field Oriented", "Field Oriented");
         orientationChooser.addOption("Robot Oriented", "Robot Oriented");
         SmartDashboard.putData("Orientation Chooser", orientationChooser);
@@ -81,33 +75,38 @@ public class SwerveDrivetrainModel {
         poseEstimator.addVisionMeasurement(botPose, Timer.getFPGATimestamp() - latency); // TODO determine latency of camera based on timestamps or other
     }
 
-    public void setModuleStates(SwerveInput input, boolean creep) {
-        var driveProp = creep ? config.kSlowDriveProp : config.kFastDriveProp;
-        var steerProp = creep ? config.kSlowSteerProp : config.kFastSteerProp;
-        var modMaxSpeed = driveProp * config.kMaxRobotSpeed;
-        var modMaxAngularSpeed = steerProp * config.kMaxRobotAngularVelocity;
+    public void setModuleStates(SwerveInput input, boolean creep,
+                                boolean isOpenLoop) {
+        var driveProp = creep ? SwerveConstants.slowDriveProp
+                              : SwerveConstants.fastDriveProp;
+        var steerProp = creep ? SwerveConstants.slowSteerProp
+                              : SwerveConstants.fastSteerProp;
+        var modMaxSpeed = driveProp * SwerveConstants.maxSpeed;
+        var modMaxAngularSpeed = steerProp * SwerveConstants.robotMaxAngularVel;
         input = handleStationary(input);
         switch (orientationChooser.getSelected()) {
             case "Field Oriented":
-                setModuleStates(kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(input.m_translationX * modMaxSpeed, input.m_translationY * modMaxSpeed, input.m_rotation * modMaxAngularSpeed, getGyroHeading())));
+                setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(input.m_translationX * modMaxSpeed, input.m_translationY * modMaxSpeed, input.m_rotation * modMaxAngularSpeed, getGyroHeading())), isOpenLoop);
                 break;
 
             case "Robot Oriented":
-                setModuleStates(kinematics.toSwerveModuleStates(new ChassisSpeeds(input.m_translationX * modMaxSpeed,
-                                                                                  input.m_translationY * modMaxSpeed,
-                                                                                  input.m_rotation * modMaxAngularSpeed)));
+                setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(new ChassisSpeeds(input.m_translationX * modMaxSpeed,
+                                                                                                  input.m_translationY * modMaxSpeed,
+                                                                                                  input.m_rotation * modMaxAngularSpeed)), isOpenLoop);
                 break;
         }
     }
 
-    public void setModuleStates(ChassisSpeeds chassisSpeeds) {
-        setModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds));
+    public void setModuleStates(ChassisSpeeds chassisSpeeds,
+                                boolean isOpenLoop) {
+        setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(chassisSpeeds), isOpenLoop);
     }
 
-    public void setModuleStates(SwerveModuleState[] swerveModuleStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, config.kMaxRobotSpeed);
+    public void setModuleStates(SwerveModuleState[] swerveModuleStates,
+                                boolean isOpenLoop) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
         for (int i = 0; i < NUM_MODULES; i++) {
-            modules[i].setDesiredState(swerveModuleStates[i]);
+            modules[i].setDesiredState(swerveModuleStates[i], isOpenLoop);
         }
     }
 
@@ -159,7 +158,7 @@ public class SwerveDrivetrainModel {
     }
 
     public void goToPose(PathPlannerState state) {
-        setModuleStates(holo.calculate(getPose(), state.poseMeters, state.velocityMetersPerSecond, state.holonomicRotation));
+        setModuleStates(holo.calculate(getPose(), state.poseMeters, state.velocityMetersPerSecond, state.holonomicRotation), false);
     }
 
     private SwerveInput handleStationary(SwerveInput input) {
@@ -174,30 +173,5 @@ public class SwerveDrivetrainModel {
 
     public SwerveModule[] getSwerveModules() {
         return modules;
-    }
-
-    public static class Configuration {
-        final double kMaxRobotSpeed, kMaxRobotAngularVelocity,
-                        kMaxRobotAnglularAcceleration;
-        final double kAutonDrivekP, kAutonSteerKp;
-        final double kFastDriveProp, kFastSteerProp, kSlowDriveProp,
-                        kSlowSteerProp;
-
-        public Configuration(double kMaxRobotSpeed,
-                             double kMaxRobotAngularVelocity,
-                             double kMaxRobotAnglularAcceleration,
-                             double kAutonDrivekP, double kAutonSteerKp,
-                             double kFastDriveProp, double kFastSteerProp,
-                             double kSlowDriveProp, double kSlowSteerProp) {
-            this.kMaxRobotSpeed = kMaxRobotSpeed;
-            this.kMaxRobotAngularVelocity = kMaxRobotAngularVelocity;
-            this.kMaxRobotAnglularAcceleration = kMaxRobotAnglularAcceleration;
-            this.kAutonDrivekP = kAutonDrivekP;
-            this.kAutonSteerKp = kAutonSteerKp;
-            this.kFastDriveProp = kFastDriveProp;
-            this.kFastSteerProp = kFastSteerProp;
-            this.kSlowDriveProp = kSlowDriveProp;
-            this.kSlowSteerProp = kSlowSteerProp;
-        }
     }
 }
