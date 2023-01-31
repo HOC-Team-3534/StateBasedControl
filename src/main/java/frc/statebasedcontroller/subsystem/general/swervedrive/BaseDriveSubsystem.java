@@ -6,12 +6,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import frc.pathplanner.PathPlannerFollower;
 import frc.pathplanner.config.PathPlannerConfig;
 import frc.statebasedcontroller.subsystem.fundamental.state.ISubsystemState;
 import frc.statebasedcontroller.subsystem.fundamental.subsystem.BaseSubsystem;
 import frc.statebasedcontroller.subsystem.general.swervedrive.swervelib.SwerveDrivetrainModel;
 import frc.statebasedcontroller.subsystem.general.swervedrive.swervelib.SwerveInput;
+import frc.statebasedcontroller.subsystem.general.swervedrive.swervelib.SwerveModule;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +52,10 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
         super(neutralState);
         this.dt = dt;
         this.kinematics = kinematics;
+        Timer.delay(1.0);
+        for (SwerveModule mod : dt.getSwerveModules()) {
+            mod.resetToAbsolute();
+        }
     }
 
     /**

@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
-public class SwerveModule implements ISwerveModule {
+public class SwerveModule {
   final IDriveController m_driveController;
   final ISteerController m_steerController;
   final ModuleType moduleType;
@@ -193,6 +193,10 @@ public class SwerveModule implements ISwerveModule {
                       m_driveController.getVelocity());
   }
 
+  public void resetToAbsolute() {
+    m_steerController.resetToAbsolute();
+  }
+
   /**
    * @return the steer motor voltage and angular velocity in radians per second
    *         of the wheel vertical axel
@@ -318,6 +322,11 @@ public class SwerveModule implements ISwerveModule {
               = m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
       setVoltage(turnOutput + turnFeedforward);
     }
+
+    @Override
+    public void resetToAbsolute() {
+      //No Absolute Encoder
+    }
   }
 
   private static class FalconDriveController implements IDriveController {
@@ -432,7 +441,7 @@ public class SwerveModule implements ISwerveModule {
                                                                                               : 1));
     }
 
-    void resetToAbsolute() {
+    public void resetToAbsolute() {
       double absolutePosition
               = Conversions.degreesToFalcon(getCanCoder().getDegrees() - angleOffset.getDegrees(), SwerveConstants.moduleConfiguration.angleGearRatio);
       steerMotor.setSelectedSensorPosition(absolutePosition);
@@ -558,7 +567,7 @@ public class SwerveModule implements ISwerveModule {
       lastAngle = getAngle();
     }
 
-    void resetToAbsolute() {
+    public void resetToAbsolute() {
       steerEncoder.setPosition(getCanCoder().getDegrees() - angleOffset.getDegrees());
     }
 
@@ -631,6 +640,8 @@ interface ISteerController {
    *                           encoder to radians turned at the module axle
    */
   void config();
+
+  void resetToAbsolute();
 
   void setAngle(SwerveModuleState desiredState);
 
