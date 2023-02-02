@@ -27,7 +27,6 @@ public class SwerveDrivetrainModel {
     final SwerveDrivePoseEstimator poseEstimator;
     private static final SendableChooser<String> orientationChooser
                     = new SendableChooser<>();
-    Rotation2d gyroOffset = new Rotation2d();
     final HolonomicDriveController holo;
 
     public SwerveDrivetrainModel(SwerveModule frontLeftModule,
@@ -45,7 +44,7 @@ public class SwerveDrivetrainModel {
          * tuned.
          */
         poseEstimator = new SwerveDrivePoseEstimator(SwerveConstants.kinematics,
-                                                     getGyroHeading(),
+                                                     getRawGyroHeading(),
                                                      getModulePositions(),
                                                      new Pose2d(),
                                                      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO tune standard devs
@@ -65,7 +64,7 @@ public class SwerveDrivetrainModel {
 
     /** Updates the field relative position of the robot. */
     public void updateOdometry() {
-        poseEstimator.update(getGyroHeading(), getModulePositions());
+        poseEstimator.update(getRawGyroHeading(), getModulePositions());
     }
 
     public void updateOdometryWithVision(Pose2d botPose, double latency) {
@@ -138,8 +137,7 @@ public class SwerveDrivetrainModel {
     }
 
     public void setKnownPose(Pose2d in) {
-        zeroGyroscope(in.getRotation());
-        poseEstimator.resetPosition(getGyroHeading(), getModulePositions(), in);
+        poseEstimator.resetPosition(getRawGyroHeading(), getModulePositions(), in);
     }
 
     public void setKnownState(PathPlannerState initialState) {
@@ -149,12 +147,12 @@ public class SwerveDrivetrainModel {
         setKnownPose(startingPose);
     }
 
-    public Rotation2d getGyroHeading() {
-        return gyro.getRotation2d().plus(gyroOffset);
+    private Rotation2d getRawGyroHeading() {
+        return gyro.getRotation2d();
     }
 
-    public void zeroGyroscope(Rotation2d angle) {
-        gyroOffset = angle.minus(getGyroHeading());
+    public Rotation2d getGyroHeading() {
+        return poseEstimator.getEstimatedPosition().getRotation();
     }
 
     public void goToPose(PathPlannerState state) {

@@ -155,14 +155,6 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
     }
 
     /**
-     * reset the gyroscope rotation to zero to indicate the front is pointing
-     * straight ahead
-     */
-    public void resetGyro() {
-        dt.zeroGyroscope(new Rotation2d());
-    }
-
-    /**
      * @return the current states of the swerve modules from the drivetrain
      *         model
      */
