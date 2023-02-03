@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,6 +28,7 @@ public class SwerveDrivetrainModel {
     private static final SendableChooser<String> orientationChooser
                     = new SendableChooser<>();
     final HolonomicDriveController holo;
+    Rotation2d simGyroAngleCache = new Rotation2d();
 
     public SwerveDrivetrainModel(SwerveModule frontLeftModule,
                                  SwerveModule frontRightModule,
@@ -47,8 +48,8 @@ public class SwerveDrivetrainModel {
                                                      getRawGyroHeading(),
                                                      getModulePositions(),
                                                      new Pose2d(),
-                                                     VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // TODO tune standard devs
-                                                     VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // TODO tune standard devs
+                                                     VecBuilder.fill(SwerveConstants.modulePoseEstXStdDev, SwerveConstants.modulePoseEstYStdDev, SwerveConstants.modulePoseEstAngleStdDev.getRadians()),
+                                                     VecBuilder.fill(SwerveConstants.visionPoseEstXStdDev, SwerveConstants.visionPoseEstYStdDev, SwerveConstants.visionPoseEstAngleStdDev.getRadians()));
         holo = new HolonomicDriveController(new PIDController(SwerveConstants.autonDriveKP,
                                                               0, 0),
                                             new PIDController(SwerveConstants.autonDriveKP,
@@ -85,24 +86,23 @@ public class SwerveDrivetrainModel {
         input = handleStationary(input);
         switch (orientationChooser.getSelected()) {
             case "Field Oriented":
-                setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(input.m_translationX * modMaxSpeed, input.m_translationY * modMaxSpeed, input.m_rotation * modMaxAngularSpeed, getGyroHeading())), isOpenLoop);
+                setModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(input.m_translationX * modMaxSpeed, input.m_translationY * modMaxSpeed, input.m_rotation * modMaxAngularSpeed, getGyroHeading()), isOpenLoop);
                 break;
 
             case "Robot Oriented":
-                setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(new ChassisSpeeds(input.m_translationX * modMaxSpeed,
-                                                                                                  input.m_translationY * modMaxSpeed,
-                                                                                                  input.m_rotation * modMaxAngularSpeed)), isOpenLoop);
+                setModuleStates(new ChassisSpeeds(input.m_translationX * modMaxSpeed,
+                                                  input.m_translationY * modMaxSpeed,
+                                                  input.m_rotation * modMaxAngularSpeed), isOpenLoop);
                 break;
         }
     }
 
     public void setModuleStates(ChassisSpeeds chassisSpeeds,
                                 boolean isOpenLoop) {
-        setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(chassisSpeeds), isOpenLoop);
-    }
-
-    public void setModuleStates(SwerveModuleState[] swerveModuleStates,
-                                boolean isOpenLoop) {
+        simGyroAngleCache
+                        = simGyroAngleCache.plus(new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * 0.020));
+        SwerveModuleState[] swerveModuleStates
+                        = SwerveConstants.kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
         for (int i = 0; i < NUM_MODULES; i++) {
             modules[i].setDesiredState(swerveModuleStates[i], isOpenLoop);
@@ -148,6 +148,8 @@ public class SwerveDrivetrainModel {
     }
 
     private Rotation2d getRawGyroHeading() {
+        if (RobotBase.isSimulation())
+            return simGyroAngleCache;
         return gyro.getRotation2d();
     }
 

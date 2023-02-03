@@ -9,6 +9,7 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public class SwerveConstants {
@@ -24,6 +25,13 @@ public class SwerveConstants {
     public static double autonDriveKP, autonSteerKP;
     public static double fastDriveProp, fastSteerProp, slowDriveProp,
                     slowSteerProp;
+    public static double modulePoseEstXStdDev = 0.01,
+                    modulePoseEstYStdDev = 0.01, visionPoseEstXStdDev = 0.01,
+                    visionPoseEstYStdDev = 0.01;
+    public static Rotation2d modulePoseEstAngleStdDev
+                    = Rotation2d.fromDegrees(0.5);
+    public static Rotation2d visionPoseEstAngleStdDev
+                    = Rotation2d.fromDegrees(5);
     public static NeutralMode driveNeutralMode = NeutralMode.Brake,
                     angleNeutralMode = NeutralMode.Coast;
     public static IdleMode driveIdleMode
