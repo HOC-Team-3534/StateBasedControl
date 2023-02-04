@@ -397,6 +397,7 @@ public class SwerveModule {
     private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY
             = Math.toRadians(0.5);
     Rotation2d lastAngle;
+    private static final double SpeedNotChangeAngle = 0.01;
 
     FalconCANCoderSteerController(WPI_TalonFX steerMotor,
                                   CANCoder absoluteEncoder,
@@ -461,8 +462,8 @@ public class SwerveModule {
     @Override
     public void setAngle(SwerveModuleState desiredState) {
       Rotation2d angle
-              = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01)) ? lastAngle
-                                                                                                   : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
+              = (Math.abs(desiredState.speedMetersPerSecond) <= SpeedNotChangeAngle) ? lastAngle
+                                                                                     : desiredState.angle; //Prevent rotating module if speed is less then 1%. Prevents Jittering.
       steerMotor.set(ControlMode.Position, Conversions.degreesToFalcon(angle.getDegrees(), SwerveConstants.moduleConfiguration.angleGearRatio));
       lastAngle = angle;
     }
@@ -538,6 +539,7 @@ public class SwerveModule {
     final CANCoder absoluteEncoder;
     final Rotation2d angleOffset;
     Rotation2d lastAngle;
+    private static final double SpeedNotChangeAngle = 0.01;
 
     NEOCANCoderSteerController(CANSparkMax steerMotor, CANCoder absoluteEncoder,
                                Rotation2d angleOffset) {
@@ -578,8 +580,8 @@ public class SwerveModule {
     @Override
     public void setAngle(SwerveModuleState desiredState) {
       Rotation2d angle
-              = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01)) ? lastAngle
-                                                                                                   : desiredState.angle; //Prevent rotating module if speed is less than 1%. Prevents Jittering.
+              = (Math.abs(desiredState.speedMetersPerSecond) <= SpeedNotChangeAngle) ? lastAngle
+                                                                                     : desiredState.angle; //Prevent rotating module if speed is less than 1%. Prevents Jittering.
       steerPID.setReference(angle.getDegrees(), ControlType.kPosition);
       lastAngle = angle;
     }
