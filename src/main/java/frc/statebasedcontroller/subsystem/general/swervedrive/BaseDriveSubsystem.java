@@ -244,7 +244,7 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
         }
         var fl = dt.getSwerveModules()[0];
         var data = fl.getDriveVoltageAndRate();
-        characterizationData.add(data.getFirst(), data.getSecond());
+        characterizationData.add(data.getSecond(), data.getFirst());
     }
 
     public void printData() {
@@ -277,7 +277,7 @@ class FeedForwardCharacterizationData {
                         = accelerationDataArray[accelerationDataArray.length - 2];
         PolynomialRegression regression
                         = new PolynomialRegression(velocityDataArray,
-                                                   voltageDataArray, 2);
+                                                   voltageDataArray, 1);
         double residualsVoltageVelocityWise[]
                         = new double[velocityDataArray.length];
         for (int i = 0; i < velocityDataArray.length; i++) {
@@ -287,7 +287,7 @@ class FeedForwardCharacterizationData {
         PolynomialRegression accelerationRegression
                         = new PolynomialRegression(accelerationDataArray,
                                                    residualsVoltageVelocityWise,
-                                                   2);
+                                                   1);
         System.out.println("FF Characterization Results:");
         System.out.println("\tCount=" + Integer.toString(velocityData.size())
                            + "");

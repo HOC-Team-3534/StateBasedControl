@@ -26,13 +26,15 @@ public class PathPlannerFollower {
     private long START_TIME;
 
     /**
-     * @param pathName      the literal name of the path file, without the extension
+     * @param pathName      the literal name of the path file, without the
+     *                      extension
      * @param autonMaxSpeed the max speed of the robot while following the path
      *                      during autonomous
-     * @param autonMaxAccel the max acceleration of the robot while following the
-     *                      path during autonomous
+     * @param autonMaxAccel the max acceleration of the robot while following
+     *                      the path during autonomous
      */
-    public PathPlannerFollower(String pathName, double autonMaxSpeed, double autonMaxAccel) {
+    public PathPlannerFollower(String pathName, double autonMaxSpeed,
+                               double autonMaxAccel) {
         PATH_FILE_NAME = pathName;
         long load_start = System.currentTimeMillis();
         loadPath(PATH_FILE_NAME, autonMaxSpeed, autonMaxAccel);
@@ -43,10 +45,10 @@ public class PathPlannerFollower {
      * Load the path for the path follower from the file
      * 
      * @param pathName the literal name of the path file, without the extension
-     * @param maxSpeed the max speed of the robot while following the path during
-     *                 autonomous
-     * @param mxAccel  the max acceleration of the robot while following the path
+     * @param maxSpeed the max speed of the robot while following the path
      *                 during autonomous
+     * @param mxAccel  the max acceleration of the robot while following the
+     *                 path during autonomous
      */
     private void loadPath(String pathName, double maxSpeed, double maxAccel) {
         this.path = PathPlanner.loadPath(pathName, maxSpeed, maxAccel);
@@ -55,8 +57,8 @@ public class PathPlannerFollower {
     /**
      * Get the state the robot will at, at a particular time
      * 
-     * @param seconds the time at which to determine the state of the robot given
-     *                the path
+     * @param seconds the time at which to determine the state of the robot
+     *                given the path
      * 
      * @return the state the robot will be at, at the particular time
      */
@@ -71,13 +73,14 @@ public class PathPlannerFollower {
      * @return the current state the robot should be at
      */
     public PathPlannerTrajectory.PathPlannerState getCurrentState() {
-        double timeSinceStart = (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
+        double timeSinceStart
+                        = (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
         return (PathPlannerTrajectory.PathPlannerState) path.sample(timeSinceStart + PathPlannerConfig.LOOK_AHEAD_TIME);
     }
 
     /**
-     * Shift the time being used to sample the trajectory to the closest point on
-     * the path within a window of time, set in {@link PathPlannerConfig}
+     * Shift the time being used to sample the trajectory to the closest point
+     * on the path within a window of time, set in {@link PathPlannerConfig}
      * 
      * @param robotPose the current pose of the robot
      */
@@ -103,7 +106,8 @@ public class PathPlannerFollower {
     protected double getClosestStateTime(Pose2d robotPose) {
         int index = 0;
         int totalSize = this.path.getStates().size();
-        double lowestDist = this.path.getState(0).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
+        double lowestDist
+                        = this.path.getState(0).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
         for (int i = 1; i < totalSize; i += 100) {
             double dist = this.path.getState(i).poseMeters.getTranslation().getDistance(robotPose.getTranslation());
             if (dist < lowestDist) {
@@ -130,7 +134,10 @@ public class PathPlannerFollower {
         return path.getInitialState();
     }
 
-    private double getTimeSinceStart() {
+    /**
+     * @return the time since the start of following the path in seconds
+     */
+    public double getTimeSinceStart() {
         return (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
     }
 
@@ -150,11 +157,12 @@ public class PathPlannerFollower {
     }
 
     /**
-     * @return has the time since the start met or exceed the duration of time of
-     *         the path
+     * @return has the time since the start met or exceed the duration of time
+     *         of the path
      */
     public boolean isFinished() {
-        double timeSinceStart = (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
+        double timeSinceStart
+                        = (double) (System.currentTimeMillis() - START_TIME) / 1000.0;
         return timeSinceStart >= path.getTotalTimeSeconds();
     }
 }
