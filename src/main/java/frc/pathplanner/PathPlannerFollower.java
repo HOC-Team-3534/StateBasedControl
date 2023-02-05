@@ -1,14 +1,14 @@
 package frc.pathplanner;
 
-import java.util.List;
-
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.pathplanner.config.PathPlannerConfig;
 
 /**
@@ -21,7 +21,6 @@ import frc.pathplanner.config.PathPlannerConfig;
  * {@link #getCurrentState()}
  */
 public class PathPlannerFollower {
-    private final String PATH_FILE_NAME;
     private PathPlannerTrajectory path;
     private long START_TIME;
 
@@ -35,10 +34,20 @@ public class PathPlannerFollower {
      */
     public PathPlannerFollower(String pathName, double autonMaxSpeed,
                                double autonMaxAccel) {
-        PATH_FILE_NAME = pathName;
         long load_start = System.currentTimeMillis();
-        loadPath(PATH_FILE_NAME, autonMaxSpeed, autonMaxAccel);
+        loadPath(pathName, autonMaxSpeed, autonMaxAccel);
         System.out.println(String.format("Path: [%s] took %d milliseconds.", pathName, System.currentTimeMillis() - load_start));
+    }
+
+    public PathPlannerFollower(Pose2d currPose, ChassisSpeeds currSpeeds,
+                               Pose2d endPose, Rotation2d endHeading,
+                               double endVelocity, double autonMaxSpeed,
+                               double autonMaxAccel) {
+        this.path = PathPlanner.generatePath(new PathConstraints(autonMaxSpeed,
+                                                                 autonMaxAccel), PathPoint.fromCurrentHolonomicState(currPose, currSpeeds), new PathPoint(endPose.getTranslation(),
+                                                                                                                                                          endHeading,
+                                                                                                                                                          endPose.getRotation(),
+                                                                                                                                                          endVelocity));
     }
 
     /**
