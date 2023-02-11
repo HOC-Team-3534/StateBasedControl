@@ -8,6 +8,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.pathplanner.config.PathPlannerConfig;
 
@@ -43,11 +44,20 @@ public class PathPlannerFollower {
                                Pose2d endPose, Rotation2d endHeading,
                                double endVelocity, double autonMaxSpeed,
                                double autonMaxAccel) {
+        PathPoint startPoint;
+        if (new Translation2d(currSpeeds.vxMetersPerSecond,
+                              currSpeeds.vyMetersPerSecond).getNorm() + currSpeeds.omegaRadiansPerSecond <= 0.05) {
+            startPoint = new PathPoint(currPose.getTranslation(),
+                                       endPose.getTranslation().minus(currPose.getTranslation()).getAngle(),
+                                       currPose.getRotation());
+        } else {
+            startPoint = PathPoint.fromCurrentHolonomicState(currPose, currSpeeds);
+        }
         this.path = PathPlanner.generatePath(new PathConstraints(autonMaxSpeed,
-                                                                 autonMaxAccel), PathPoint.fromCurrentHolonomicState(currPose, currSpeeds), new PathPoint(endPose.getTranslation(),
-                                                                                                                                                          endHeading,
-                                                                                                                                                          endPose.getRotation(),
-                                                                                                                                                          endVelocity));
+                                                                 autonMaxAccel), startPoint, new PathPoint(endPose.getTranslation(),
+                                                                                                           endHeading,
+                                                                                                           endPose.getRotation(),
+                                                                                                           endVelocity));
     }
 
     /**

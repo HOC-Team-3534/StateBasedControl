@@ -397,7 +397,7 @@ public class SwerveModule {
     private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY
             = Math.toRadians(0.5);
     Rotation2d lastAngle;
-    private static final double SpeedNotChangeAngle = 0.01;
+    private static final double SpeedNotChangeAngle = 0.05;
 
     FalconCANCoderSteerController(WPI_TalonFX steerMotor,
                                   CANCoder absoluteEncoder,
@@ -539,7 +539,7 @@ public class SwerveModule {
     final CANCoder absoluteEncoder;
     final Rotation2d angleOffset;
     Rotation2d lastAngle;
-    private static final double SpeedNotChangeAngle = 0.01;
+    private static final double SpeedNotChangeAngle = 0.05;
 
     NEOCANCoderSteerController(CANSparkMax steerMotor, CANCoder absoluteEncoder,
                                Rotation2d angleOffset) {
