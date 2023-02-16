@@ -206,6 +206,20 @@ public abstract class BaseDriveSubsystem<SsS extends ISubsystemState> extends Ba
     }
 
     /**
+     * @param x     the proportion (-1 to 1) in the backward and forward
+     *              direction to drive the robot cut to creep proportion
+     * @param y     the proportion (-1 to 1) in the left and right direction to
+     *              drive the robot cut to creep proportion
+     * @param rot   Desired holonomic rotation of robot
+     * @param creep Are in creep mode
+     */
+    protected void setModuleStatesDesiredAngle(double x, double y,
+                                               Rotation2d rot, boolean creep) {
+        var reset = this.getStateFirstRunThrough();
+        dt.setModuleStates(new SwerveInput(x, y, 0), rot, creep, reset);
+    }
+
+    /**
      * Based on the current state of the path follower and the current pose, the
      * holonomic controller of the drivetrain model will calculate the desired
      * module states

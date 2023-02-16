@@ -171,6 +171,18 @@ public class SwerveDrivetrainModel {
         return input;
     }
 
+    public void setModuleStates(SwerveInput input, Rotation2d desiredRotation,
+                                boolean creep, boolean resetController) {
+        var driveProp = creep ? SwerveConstants.slowDriveProp
+                              : SwerveConstants.fastDriveProp;
+        var modMaxSpeed = driveProp * SwerveConstants.maxSpeed;
+        input = handleStationary(input);
+        if (resetController)
+            holo.getThetaController().reset(getGyroHeading().getRadians());
+        var angularSpeed = holo.getThetaController().calculate(getGyroHeading().getRadians(), desiredRotation.getRadians());
+        setModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(input.m_translationX * modMaxSpeed, input.m_translationY * modMaxSpeed, angularSpeed, getGyroHeading()), false);
+    }
+
     public SwerveModule[] getSwerveModules() {
         return modules;
     }
